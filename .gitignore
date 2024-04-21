@@ -1,0 +1,7 @@
+*.log
+shared/workspace/inputs/*
+shared/workspace/outputs/*
+shared/workspace/tmp/*
+shared/workspace/urls_list.txt
+shared/dot_cache/*
+*.pyc
