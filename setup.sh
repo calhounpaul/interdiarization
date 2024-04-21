@@ -90,10 +90,10 @@ sudo systemctl restart docker
 docker build . -t interdia_whisperx -f Dockerfile.whisperx
 
 
-if [ ! -d "workspace/tmp/outlines_vllm_server" ]; then
-    mkdir -p workspace/tmp/outlines_vllm_server
+if [ ! -d "shared/workspace/tmp/outlines_vllm_server" ]; then
+    mkdir -p shared/workspace/tmp/outlines_vllm_server
 fi
-cd workspace/tmp/outlines_vllm_server
+cd shared/workspace/tmp/outlines_vllm_server
 
 if [ ! -d "vllm" ]; then
     git clone https://github.com/vllm-project/vllm
