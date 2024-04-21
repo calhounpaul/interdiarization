@@ -89,6 +89,25 @@ sudo systemctl restart docker
 
 docker build . -t interdia_whisperx -f Dockerfile.whisperx
 
+
+if [ ! -d "workspace/tmp/outlines_vllm_server" ]; then
+    mkdir -p workspace/tmp/outlines_vllm_server
+fi
+cd workspace/tmp/outlines_vllm_server
+
+if [ ! -d "vllm" ]; then
+    git clone https://github.com/vllm-project/vllm
+    cd vllm
+    git checkout cc74b2b232070f74d8765a5eefa49ae93ee45490
+    sed -i 's/outlines==/#outlines==/g' requirements.txt
+    echo "outlines[serve]" >> requirements.txt
+    sed -i 's/ENTRYPOINT/#ENTRYPOINT/g' Dockerfile
+    echo "ENTRYPOINT [\"python3\", \"-m\", \"outlines.serve.serve\"]" >> Dockerfile
+    cd ..
+fi
+cd vllm
+docker build -t outlines_vllm_server .
+
 pip3 install docker
 
 sudo reboot

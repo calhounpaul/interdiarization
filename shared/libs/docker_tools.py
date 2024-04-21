@@ -18,7 +18,7 @@ def init_container(image_name, command, container_name, volumes, ports, environm
         container.remove()
     except:
         pass
-    container = client.containers.run(image_name,command, detach=detach, name=container_name, volumes=volumes, ports=ports, environment=environment, runtime=runtime)
+    container = client.containers.run(image_name,command=command, detach=detach, name=container_name, volumes=volumes, ports=ports, environment=environment, runtime=runtime)
     return container
 
 def get_container_logs(container_name):
