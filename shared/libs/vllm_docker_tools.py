@@ -1,23 +1,5 @@
 import os, json, shutil, getpass, atexit, time, hashlib
 
-"""
-SECRETS_FILE_PATH=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))/secrets.json
-HF_TOKEN=$(jq -r '.HF_TOKEN' $SECRETS_FILE_PATH)
-
-HF_CACHE_FOLDER_PATH=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))/cache/hf
-
-docker run --rm -it \
-    --env "HUGGING_FACE_HUB_TOKEN=$HF_TOKEN" \
-    -v $HF_CACHE_FOLDER_PATH:/root/.cache/huggingface \
-    --gpus='"device=0"' \
-    -p 8000:8000 \
-    --ipc=host \
-    outlines_vllm_server \
-    --dtype="float16" \
-    --model casperhansen/llama-3-8b-instruct-awq
-"""
-
-
 import os, sys, json, shutil, getpass, atexit, time, hashlib, docker
 from secrets_handler import init_secrets, get_secrets
 

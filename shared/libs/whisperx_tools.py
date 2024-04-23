@@ -42,7 +42,7 @@ def transcribe_and_diarize_single_audio(input_audio_filename,aggregate_dir):
         if not dz_model:
             dz_model = whisperx.DiarizationPipeline(use_auth_token=HF_TOKEN, device=device) #,download_root=models_dir)
         audio = whisperx.load_audio(input_audio_path)
-        result = wx_model.transcribe(audio, batch_size=16)
+        result = wx_model.transcribe(audio, batch_size=1)
         model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=device)
         result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
         diarize_segments = dz_model(audio)

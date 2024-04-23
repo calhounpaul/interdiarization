@@ -6,42 +6,26 @@ outputs_dir_path = os.path.join(shared_dir_path, "workspace", "outputs")
 
 def group_diarizations(json_dict, max_jitter_gap=2.0):
     segments = json_dict["segments"]
-    speech_segments = []
-    for segment in segments:
-        if len(segment["words"]) == 0:
-            continue
-        for word in segment["words"]:
-            if "speaker" not in word:
-                word["speaker"] = "UNKNOWN"
-        prior_speaker = segment["words"][0]["speaker"]
-        for word in segment["words"]:
-            speaker = word["speaker"]
-            if speaker != prior_speaker:
-                speech_segments.append({
-                    "speaker": prior_speaker,
-                    "text": " ".join([w["word"] for w in segment["words"]])
-                })
-                segment["words"] = []
-                break
     grouped_segments = []
     current_segment = None
-    for segment in speech_segments:
-        if not current_segment:
-            current_segment = segment
-            continue
-        if segment["speaker"] == current_segment["speaker"]:
-            current_segment["text"] += " " + segment["text"]
-        else:
+    for segment in segments:
+        if "speaker" not in segment:
+            segment["speaker"] = "UNKNOWN"
+        if current_segment is None:
+            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", "")}
+        elif segment["start"] - current_segment["end"] > max_jitter_gap:
             grouped_segments.append(current_segment)
-            current_segment = segment
-    if current_segment:
+            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", "")}
+        else:
+            current_segment["text"] += " " + segment.get("text", "")
+        current_segment["end"] = segment["end"]
+    if current_segment is not None:
         grouped_segments.append(current_segment)
     return grouped_segments
 
-            
+
 
 def reformat_all_transcription_json_to_transcripts():
-    #iterate over all transcription.json files, check for transcription.txt in the same directory, and if it doesn't exist, create it
     for parent_dir in os.listdir(outputs_dir_path):
         for transcript_folder in os.listdir(os.path.join(outputs_dir_path, parent_dir)):
             transcript_folder_path = os.path.join(outputs_dir_path, parent_dir, transcript_folder)
@@ -64,7 +48,7 @@ def reformat_all_transcription_json_to_transcripts():
                 except Exception as e:
                     print(f"Error processing {transcript_folder}: {e}")
                     #save to transcription.txt anyway
-                    f.write(e)
+                    f.write("ERROR: " + str(e))
                     continue
 
             

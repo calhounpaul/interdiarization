@@ -45,7 +45,7 @@ for oneliner in jokes_lines:
             "max_tokens": 1024
         }
 
-        response = requests.post("http://ub22-base-srv-240420.lan:8001/generate", json=json_payload)
+        response = requests.post("http://localhost:8001/generate", json=json_payload)
         response_string = json.loads(response.json()["text"][0].split("<|end_header_id>")[-1])["explanation"]
         formatted_string = f"Joke: {oneliner}\n\nExplanation: {response_string}\n--------\n"
         print(formatted_string)
