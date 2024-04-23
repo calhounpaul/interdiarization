@@ -66,3 +66,34 @@ def transcribe_and_diarize_all_audio():
                 continue
             transcribe_and_diarize_single_audio(file, folder)
             print(f"Processed {file}")
+
+def copy_all_metadata_to_outputs_dir():
+    for channel_dir in os.listdir(os.path.join(inputs_path)):
+        channel_json_YTID = "_".join(channel_dir.split("_")[1:-1])
+        channel_metadata = None
+        all_video_dirnames_to_YTIDs = {}
+        all_video_metadata = {}
+        for video_file in os.listdir(os.path.join(inputs_path, channel_dir)):
+            if not video_file.endswith(".info.json"):
+                continue
+            video_dir = os.path.join(outputs_path, channel_dir,".".join(video_file.split(".")[:-2]))
+            video_YTID = video_dir.split("YTID:")[-1].split(":YTID")[0]
+            if channel_json_YTID in video_YTID:
+                channel_metadata = json.load(open(os.path.join(inputs_path, channel_dir, video_file), 'r'))
+                continue
+            all_video_dirnames_to_YTIDs[video_dir] = video_YTID
+            #print(inputs_path)
+            all_video_metadata[video_YTID] = json.load(open(os.path.join(inputs_path, channel_dir, video_file), 'r'))
+        for video_dir in all_video_dirnames_to_YTIDs:
+            if not os.path.exists(video_dir):
+                #os.makedirs(video_dir)
+                continue
+            if not os.path.exists(os.path.join(video_dir, "transcription.json")):
+                #remove output dir
+                shutil.rmtree(video_dir)
+                continue
+            with open(os.path.join(video_dir, "info.json"), 'w') as f:
+                json.dump(all_video_metadata[all_video_dirnames_to_YTIDs[video_dir]], f, indent=4)
+            with open(os.path.join(video_dir, "channel_info.json"), 'w') as f:
+                json.dump(channel_metadata, f, indent=4)
+            #print(f"Saved metadata for {all_video_dirnames_to_YTIDs[video_dir]}")

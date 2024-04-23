@@ -11,14 +11,23 @@ def group_diarizations(json_dict, max_jitter_gap=2.0):
     for segment in segments:
         if "speaker" not in segment:
             segment["speaker"] = "UNKNOWN"
+        if "text" not in segment:
+            segment["text"] = ""
+        all_words_in_string = ""
+        if "words" in segment:
+            all_words_in_string = " ".join([w["word"] for w in segment["words"]])
         if current_segment is None:
-            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", "")}
+            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", ""), "start": segment["start"]}
         elif segment["start"] - current_segment["end"] > max_jitter_gap:
             grouped_segments.append(current_segment)
-            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", "")}
+            current_segment = {"speaker": segment["speaker"], "text": segment.get("text", ""), "start": segment["start"]}
         else:
             current_segment["text"] += " " + segment.get("text", "")
         current_segment["end"] = segment["end"]
+        if all_words_in_string != "" and all_words_in_string > current_segment["text"]:
+            current_segment["text"] = all_words_in_string
+            grouped_segments.append(current_segment)
+            current_segment = None
     if current_segment is not None:
         grouped_segments.append(current_segment)
     return grouped_segments
@@ -39,6 +48,9 @@ def reformat_all_transcription_json_to_transcripts():
             if not os.path.exists(os.path.join(transcript_folder_path, "transcription.json")):
                 continue
             json_dict = json.load(open(os.path.join(transcript_folder_path, "transcription.json"), 'r'))
+            #write json_dict to transcription_prettify.json
+            #with open(os.path.join(transcript_folder_path, "transcription_prettify.json"), 'w') as f:
+            #    json.dump(json_dict, f, indent=4)
             with open(os.path.join(transcript_folder_path, "transcription.txt"), 'w') as f:
                 try:
                     grouped_segments = group_diarizations(json_dict)
@@ -50,5 +62,3 @@ def reformat_all_transcription_json_to_transcripts():
                     #save to transcription.txt anyway
                     f.write("ERROR: " + str(e))
                     continue
-
-            

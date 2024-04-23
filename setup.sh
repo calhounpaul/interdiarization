@@ -98,7 +98,7 @@ cd shared/workspace/tmp/outlines_vllm_server
 if [ ! -d "vllm" ]; then
     git clone https://github.com/vllm-project/vllm
     cd vllm
-    git checkout cc74b2b232070f74d8765a5eefa49ae93ee45490
+    git checkout 62b8aebc6f06b5c8fafa1f27893cd4f9bb11fa8b
     sed -i 's/outlines==/#outlines==/g' requirements.txt
     echo "outlines[serve]" >> requirements.txt
     sed -i 's/ENTRYPOINT/#ENTRYPOINT/g' Dockerfile
@@ -108,6 +108,6 @@ fi
 cd vllm
 docker build -t outlines_vllm_server .
 
-pip3 install docker
+pip3 install docker json-repair
 
 sudo reboot

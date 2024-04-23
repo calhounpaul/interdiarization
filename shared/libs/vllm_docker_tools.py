@@ -17,13 +17,14 @@ from docker_tools import init_container, stop_and_remove_all_containers, get_con
 VLLM_CONTAINER_NAME = "vllm_server"
 VLLM_IMAGE_NAME = "outlines_vllm_server"
 
-def init_vllm_container(container_name=VLLM_CONTAINER_NAME,gpu_id=0,detach=True,model_name="astronomer-io/Llama-3-8B-Instruct-GPTQ-8-Bit"):
+def init_vllm_container(container_name=VLLM_CONTAINER_NAME,gpu_id=0,detach=True,model_name="casperhansen/llama-3-8b-instruct-awq"): #"astronomer-io/Llama-3-8B-Instruct-GPTQ-8-Bit"):
     volumes = {
         dot_cache_path: {'bind': '/root/.cache/huggingface', 'mode': 'rw'},
     }
     ports = {
-        8000: 8001
+        8000: 8000
     }
+    #network_mode = "host"
     environment = {
         "HUGGING_FACE_HUB_TOKEN": secrets["HF_TOKEN"],
         "CUDA_VISIBLE_DEVICES": str(gpu_id),

@@ -14,7 +14,7 @@ if not os.path.exists(outputs_dir):
 sys.path.append(container_libs_dir)
 
 import whisperx_tools
-from whisperx_tools import transcribe_and_diarize_all_audio
+from whisperx_tools import transcribe_and_diarize_all_audio, copy_all_metadata_to_outputs_dir
 from youtube_tools import download_yt_data
 
 import multiprocessing
@@ -24,6 +24,7 @@ download_pool.apply_async(download_yt_data)
 download_pool.close()
 
 for n in range(100):
+    copy_all_metadata_to_outputs_dir()
     transcribe_and_diarize_all_audio()
     time.sleep(60)
 

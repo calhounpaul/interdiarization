@@ -24,13 +24,21 @@ from vllm_docker_tools import init_vllm_container
 atexit.register(stop_and_remove_all_containers)
 init_secrets()
 
-container_0 = init_whisperx_container(gpu_id=0)
-container_1 = init_whisperx_container(gpu_id=0)
+containers = []
+gpuid = 0
+for n in range(4):
+    container_name = "whisperx_" + str(n)
+    container = init_whisperx_container(container_name, gpuid)
+    containers.append(container)
+    print(container_name)
+gpuid = 1
+for n in range(5, 9):
+    container_name = "whisperx_" + str(n)
+    container = init_whisperx_container(container_name, gpuid)
+    containers.append(container)
+    print(container_name)
 
-vllm_container = init_vllm_container(gpu_id=1)
-
-#container_2 = init_whisperx_container(gpu_id=1)
-#container_3 = init_whisperx_container(gpu_id=1)
+#vllm_container = init_vllm_container(gpu_id=1)
 
 prior_outputs_qty = [len(os.listdir(os.path.join(workspace_path, "outputs",d))) for d in os.listdir(os.path.join(workspace_path, "outputs"))]
 while True:

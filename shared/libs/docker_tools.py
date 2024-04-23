@@ -11,14 +11,26 @@ if not os.path.exists(logs_dir_path):
 
 client = docker.from_env()
 
-def init_container(image_name, command, container_name, volumes, ports, environment, detach=True,runtime="nvidia"):
+def init_container(image_name, command, container_name, volumes, ports, environment, detach=True,runtime="nvidia",network_mode=None):
     try:
         container = client.containers.get(container_name)
         container.stop()
         container.remove()
     except:
         pass
-    container = client.containers.run(image_name,command=command, detach=detach, name=container_name, volumes=volumes, ports=ports, environment=environment, runtime=runtime)
+    kwargs = {
+        "image": image_name,
+        "command": command,
+        "detach": detach,
+        "name": container_name,
+        "volumes": volumes,
+        "ports": ports,
+        "environment": environment,
+        "runtime": runtime,
+    }
+    if network_mode:
+        kwargs["network_mode"] = network_mode
+    container = client.containers.run(**kwargs)
     return container
 
 def get_container_logs(container_name):
